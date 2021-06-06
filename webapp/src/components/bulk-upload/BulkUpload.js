@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react'
+import { object } from 'prop-types'
+
 import { useMutation } from '@apollo/client'
 import CsvUpload from '../../gql/csvUpload.gql'
 
-const BulkUpload = () => {
+const BulkUpload = ({ i18n }) => {
+  const i18nData = i18n?.uploadTxData ?? {}
+
   const [selectedFile, setSelectedFile] = useState()
   const [isFilePicked, setIsFilePicked] = useState(false)
 
@@ -12,10 +16,6 @@ const BulkUpload = () => {
     setSelectedFile(event.target.files[0])
     setIsFilePicked(true)
   }
-
-  useEffect(() => {
-    console.log('selectedFile', selectedFile)
-  }, [selectedFile])
 
   const handleSubmission = e => {
     e.preventDefault()
@@ -27,7 +27,6 @@ const BulkUpload = () => {
     const reader = new window.FileReader()
     reader.onload = async (e) => {
       const text = (e.target.result)
-      console.log('TEXT', text)
 
       uploadCsv({
         variables: {
@@ -38,29 +37,37 @@ const BulkUpload = () => {
     reader.readAsText(selectedFile)
   }
 
+  useEffect(() => {
+    document.title = i18nData?.title
+  }, [i18nData])
+
   return (
     <div>
-      <h1>Upload Transaction Data CSV</h1>
+      <h1>{i18n?.uploadTxData?.header}</h1>
       <br />
       <input id='csv-upload-input' name='csv-upload' onChange={changeHandler} type='file' />
       {isFilePicked ? (
         <div>
-          <p>Filename: {selectedFile.name}</p>
-          <p>Filetype: {selectedFile.type}</p>
-          <p>Size in bytes: {selectedFile.size}</p>
+          <p>{i18n?.uploadTxData?.fileData?.fileName} {selectedFile.name}</p>
+          <p>{i18n?.uploadTxData?.fileData?.fileType} {selectedFile.type}</p>
+          <p>{i18n?.uploadTxData?.fileData?.fileSize} {selectedFile.size}</p>
           <p>
-            lastModifiedDate:{' '}
+            {i18n?.uploadTxData?.fileData?.fileLastModified}{' '}
             {selectedFile.lastModifiedDate.toLocaleDateString()}
           </p>
         </div>
       ) : (
-        <p>Select a file to show details</p>
+        <p>{i18n?.uploadTxData?.instructions}</p>
       )}
       <div>
-        <button onClick={handleSubmission}>Submit</button>
+        <button onClick={handleSubmission}>{i18nData?.buttons?.submit}</button>
       </div>
     </div>
   )
+}
+
+BulkUpload.propTypes = {
+  i18n: object
 }
 
 export default BulkUpload

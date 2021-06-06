@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { arrayOf, string, bool, number, shape } from 'prop-types'
+import React, { useEffect, useState } from 'react'
+import { arrayOf, string, bool, number, shape, object } from 'prop-types'
 
 import { useMutation } from '@apollo/client'
 import useAddTransaction from '../../gql/addTransaction'
@@ -10,7 +10,8 @@ import { TxTableDataRow } from './TxTableDataRow'
 
 import { css } from '@emotion/core'
 
-export function TxTable ({ data }) {
+export function TxTable ({ data, i18n }) {
+  const account = i18n?.account ?? {}
   const [ addTransaction ] = useAddTransaction()
   const [ removeTransaction ] = useRemoveTransaction()
   const [ updateTransaction ] = useMutation(UpdateTransaction)
@@ -45,19 +46,23 @@ export function TxTable ({ data }) {
     setAddTxAmount('')
   }
 
+  useEffect(() => {
+    document.title = account?.title
+  }, [account])
+
   return (
     <div css={styles}>
-      <h1>Account Transactions</h1>
+      <h1>{account?.h1}</h1>
       <table className='tx-table' >
         <tbody>
           <tr className='header'>
-            <td>ID</td>
-            <td>User ID</td>
-            <td>Description</td>
-            <td>Merchant ID</td>
-            <td>Debit</td>
-            <td>Credit</td>
-            <td>Amount</td>
+            <td>{account?.table?.columns?.id}</td>
+            <td>{account?.table?.columns?.userId}</td>
+            <td>{account?.table?.columns?.description}</td>
+            <td>{account?.table?.columns?.merchantId}</td>
+            <td>{account?.table?.columns?.debit}</td>
+            <td>{account?.table?.columns?.credit}</td>
+            <td>{account?.table?.columns?.amount}</td>
             <td />
           </tr>
           {data.map(tx => (
@@ -72,15 +77,17 @@ export function TxTable ({ data }) {
       </table>
 
       <div className='add-tx-control'>
-        <h3>Add Transaction</h3>
-        <button onClick={() => setExpandAddTx(!expandAddTx)}>{expandAddTx ? 'Cancel' : 'Add'}</button>
+        <h3>{account?.addTransaction?.header}</h3>
+        <button onClick={() => setExpandAddTx(!expandAddTx)}>
+          {expandAddTx ? account?.addTransaction?.cancel : account?.addTransaction?.addButton}
+        </button>
       </div>
 
       <br />
       <form className={`add-tx-form ${expandAddTx ? 'expanded' : 'collapsed'}`} onSubmit={e => submitNewTx(e)} >
         <div className='add-tx-row'>
           <div className='input-group'>
-            <label htmlFor='add-tx-desc'>Description</label>
+            <label htmlFor='add-tx-desc'>{account?.addTransaction?.description}</label>
             <input
               id='add-tx-desc'
               onChange={e => setAddTxDesc(e.target.value)}
@@ -89,7 +96,7 @@ export function TxTable ({ data }) {
             />
           </div>
           <div className='input-group'>
-            <label htmlFor='add-tx-merchant'>Merchant</label>
+            <label htmlFor='add-tx-merchant'>{account?.addTransaction?.merchantId}</label>
             <input
               id='add-tx-merchant'
               onChange={e => setAddTxMerchant(e.target.value)}
@@ -98,7 +105,7 @@ export function TxTable ({ data }) {
             />
           </div>
           <div className='input-group'>
-            <label htmlFor='add-tx-amount'>Amount</label>
+            <label htmlFor='add-tx-amount'>{account?.addTransaction?.amount}</label>
             <span className='dollar'>
               $<input
                 id='add-tx-amount'
@@ -111,10 +118,10 @@ export function TxTable ({ data }) {
           <div className='input-group debit-switch'>
             <label htmlFor='add-tx-debit-credit'>
               <div className='switch'>
-                <div className='debit-bg bg'>Debit</div>
-                <div className='credit-bg bg'>Credit</div>
+                <div className='debit-bg bg'>{account?.addTransaction?.debit}</div>
+                <div className='credit-bg bg'>{account?.addTransaction?.credit}</div>
                 <div className={`selected-indicator ${addTxDebit ? '' : 'credit-selected'}`}>
-                  {addTxDebit ? 'Debit' : 'Credit'}
+                  {addTxDebit ? account?.addTransaction?.debit : account?.addTransaction?.credit}
                 </div>
               </div>
             </label>
@@ -126,7 +133,7 @@ export function TxTable ({ data }) {
             />
           </div>
         </div>
-        <button>Add Transaction</button>
+        <button>{account?.addTransaction?.submitButton}</button>
       </form>
     </div>
   )
@@ -239,5 +246,6 @@ TxTable.propTypes = {
     debit: bool,
     credit: bool,
     amount: number
-  }))
+  })),
+  i18n: object
 }

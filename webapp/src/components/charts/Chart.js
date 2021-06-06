@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { number, string } from 'prop-types'
+import React, { useEffect, useState } from 'react'
+import { number, string, object } from 'prop-types'
 import { useQuery } from '@apollo/client'
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
 
@@ -41,7 +41,8 @@ const renderCustomizedLabel = (props) => {
   )
 }
 
-const Chart = () => {
+const Chart = ({ i18n }) => {
+  const i18nData = i18n?.charts ?? {}
   const [debitSelected, setDebitSelected] = useState(true)
   const { data = { transactions: [] } } = useQuery(GetTransactions)
 
@@ -53,17 +54,19 @@ const Chart = () => {
   const debitData = aggregateData(debits)
   const creditData = aggregateData(credits)
 
-  console.log('creditData', creditData)
-
   const chartData = debitSelected ? debitData : creditData
+
+  useEffect(() => {
+    document.title = i18nData?.title
+  }, [i18nData])
 
   return (
     <div css={styles}>
-      <h1>{debitSelected ? 'Spending Chart' : 'Deposit Chart'}</h1>
+      <h1>{debitSelected ? i18nData.chargesHeader : i18nData.depositsHeader}</h1>
       <br />
       <div className='controls'>
-        <button onClick={() => setDebitSelected(true)}>Charges</button>
-        <button onClick={() => setDebitSelected(false)}>Deposits</button>
+        <button onClick={() => setDebitSelected(true)}>{i18nData.buttons?.charges}</button>
+        <button onClick={() => setDebitSelected(false)}>{i18nData.buttons?.deposits}</button>
       </div>
       <div className='data'>
         <ResponsiveContainer
@@ -88,7 +91,7 @@ const Chart = () => {
           </PieChart>
         </ResponsiveContainer>
         <div className='legend-wrapper'>
-          <h3>Legend</h3>
+          <h3>{i18nData.legendHeader}</h3>
           <div className='legend-container'>
             <ul className='legend'>
               {chartData.data.map((dataPoint, i) => {
@@ -110,6 +113,10 @@ const Chart = () => {
 }
 
 export default Chart
+
+Chart.propTypes = {
+  i18n: object
+}
 
 renderCustomizedLabel.propTypes = {
   cx: number,

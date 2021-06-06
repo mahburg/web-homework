@@ -33,7 +33,6 @@ const useAddTransaction = (onSuccess = (noop), onError = (noop)) => {
 
       onSuccess()
     } catch (error) {
-      console.log('error', error)
       onError(error)
     }
   }

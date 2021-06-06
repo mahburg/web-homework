@@ -4,7 +4,7 @@ export const styles = css`
   cursor: pointer;
   position: relative;
 
-  &:nth-child(odd) {
+  &:nth-of-type(odd) {
     background-color: lightblue;
   }
 
