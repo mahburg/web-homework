@@ -18,6 +18,7 @@ module.exports = {
         credit: 'Credit',
         amount: 'Amount'
       },
+      empty: 'No records found',
       buttons: {
         options: 'Options',
         edit: 'Edit',

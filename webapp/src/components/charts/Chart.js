@@ -60,13 +60,15 @@ const Chart = ({ i18n }) => {
     document.title = i18nData?.title
   }, [i18nData])
 
+  console.log('transactions', transactions)
+
   return (
     <div css={styles}>
       <h1>{debitSelected ? i18nData.chargesHeader : i18nData.depositsHeader}</h1>
       <br />
       <div className='controls'>
-        <button onClick={() => setDebitSelected(true)}>{i18nData.buttons?.charges}</button>
-        <button onClick={() => setDebitSelected(false)}>{i18nData.buttons?.deposits}</button>
+        <button data-testid='select-debit' onClick={() => setDebitSelected(true)}>{i18nData.buttons?.charges}</button>
+        <button data-testid='select-credit' onClick={() => setDebitSelected(false)}>{i18nData.buttons?.deposits}</button>
       </div>
       <div className='data'>
         <ResponsiveContainer
@@ -96,12 +98,12 @@ const Chart = ({ i18n }) => {
             <ul className='legend'>
               {chartData.data.map((dataPoint, i) => {
                 return (
-                  <>
+                  <li className='legend-row' data-testid={'legend-row-' + dataPoint.name }>
                     <div className='color-box' style={{ backgroundColor: COLORS[i] }} />
                     <p className='name'>{initialCaps(dataPoint.name)}</p>
                     <p className='amount'>{formatCurrency(dataPoint.value)}</p>
                     <p className='percent'>{formatPercent(dataPoint.percent)}</p>
-                  </>
+                  </li>
                 )
               })}
             </ul>

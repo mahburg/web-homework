@@ -11,7 +11,7 @@ import { TxTableDataRow } from './TxTableDataRow'
 import { css } from '@emotion/core'
 
 export function TxTable ({ data, i18n }) {
-  const account = i18n?.account ?? {}
+  const i18nData = i18n?.account ?? {}
   const [ addTransaction ] = useAddTransaction()
   const [ removeTransaction ] = useRemoveTransaction()
   const [ updateTransaction ] = useMutation(UpdateTransaction)
@@ -47,48 +47,56 @@ export function TxTable ({ data, i18n }) {
   }
 
   useEffect(() => {
-    document.title = account?.title
-  }, [account])
+    document.title = i18nData?.title
+  }, [i18nData])
 
   return (
     <div css={styles}>
-      <h1>{account?.h1}</h1>
+      <h1>{i18nData?.h1}</h1>
       <table className='tx-table' >
         <tbody>
           <tr className='header'>
-            <td>{account?.table?.columns?.id}</td>
-            <td>{account?.table?.columns?.userId}</td>
-            <td>{account?.table?.columns?.description}</td>
-            <td>{account?.table?.columns?.merchantId}</td>
-            <td>{account?.table?.columns?.debit}</td>
-            <td>{account?.table?.columns?.credit}</td>
-            <td>{account?.table?.columns?.amount}</td>
+            <td>{i18nData?.table?.columns?.id}</td>
+            <td>{i18nData?.table?.columns?.userId}</td>
+            <td>{i18nData?.table?.columns?.description}</td>
+            <td>{i18nData?.table?.columns?.merchantId}</td>
+            <td>{i18nData?.table?.columns?.debit}</td>
+            <td>{i18nData?.table?.columns?.credit}</td>
+            <td>{i18nData?.table?.columns?.amount}</td>
             <td />
           </tr>
-          {data.map(tx => (
-            <TxTableDataRow
-              key={`transaction-${tx.id}`}
-              removeTransaction={removeTransaction}
-              tx={tx}
-              updateTransaction={updateTransaction}
-            />
-          ))}
+          {data.length > 0
+            ? data.map(tx => (
+              <TxTableDataRow
+                key={`transaction-${tx.id}`}
+                removeTransaction={removeTransaction}
+                tx={tx}
+                updateTransaction={updateTransaction}
+              />
+            ))
+            : (
+              <tr className='empty-table' data-testid='empty-table'>
+                <td>{i18nData?.table?.empty}</td>
+              </tr>
+            )
+          }
         </tbody>
       </table>
 
       <div className='add-tx-control'>
-        <h3>{account?.addTransaction?.header}</h3>
-        <button onClick={() => setExpandAddTx(!expandAddTx)}>
-          {expandAddTx ? account?.addTransaction?.cancel : account?.addTransaction?.addButton}
+        <h3>{i18nData?.addTransaction?.header}</h3>
+        <button data-testid='add-tx-button' onClick={() => setExpandAddTx(!expandAddTx)}>
+          {expandAddTx ? i18nData?.addTransaction?.cancel : i18nData?.addTransaction?.addButton}
         </button>
       </div>
 
       <br />
-      <form className={`add-tx-form ${expandAddTx ? 'expanded' : 'collapsed'}`} onSubmit={e => submitNewTx(e)} >
+      <form className={`add-tx-form ${expandAddTx ? 'expanded' : 'collapsed'}`} data-testid='add-tx-form' onSubmit={e => submitNewTx(e)} >
         <div className='add-tx-row'>
           <div className='input-group'>
-            <label htmlFor='add-tx-desc'>{account?.addTransaction?.description}</label>
+            <label htmlFor='add-tx-desc'>{i18nData?.addTransaction?.description}</label>
             <input
+              data-testid='add-tx-desc'
               id='add-tx-desc'
               onChange={e => setAddTxDesc(e.target.value)}
               type='text'
@@ -96,8 +104,9 @@ export function TxTable ({ data, i18n }) {
             />
           </div>
           <div className='input-group'>
-            <label htmlFor='add-tx-merchant'>{account?.addTransaction?.merchantId}</label>
+            <label htmlFor='add-tx-merchant'>{i18nData?.addTransaction?.merchantId}</label>
             <input
+              data-testid='add-tx-merchant'
               id='add-tx-merchant'
               onChange={e => setAddTxMerchant(e.target.value)}
               type='text'
@@ -105,9 +114,10 @@ export function TxTable ({ data, i18n }) {
             />
           </div>
           <div className='input-group'>
-            <label htmlFor='add-tx-amount'>{account?.addTransaction?.amount}</label>
+            <label htmlFor='add-tx-amount'>{i18nData?.addTransaction?.amount}</label>
             <span className='dollar'>
               $<input
+                data-testid='add-tx-amount'
                 id='add-tx-amount'
                 onChange={e => setNumberValue(e.target.value)}
                 type='text'
@@ -118,22 +128,23 @@ export function TxTable ({ data, i18n }) {
           <div className='input-group debit-switch'>
             <label htmlFor='add-tx-debit-credit'>
               <div className='switch'>
-                <div className='debit-bg bg'>{account?.addTransaction?.debit}</div>
-                <div className='credit-bg bg'>{account?.addTransaction?.credit}</div>
+                <div className='debit-bg bg'>{i18nData?.addTransaction?.debit}</div>
+                <div className='credit-bg bg'>{i18nData?.addTransaction?.credit}</div>
                 <div className={`selected-indicator ${addTxDebit ? '' : 'credit-selected'}`}>
-                  {addTxDebit ? account?.addTransaction?.debit : account?.addTransaction?.credit}
+                  {addTxDebit ? i18nData?.addTransaction?.debit : i18nData?.addTransaction?.credit}
                 </div>
               </div>
             </label>
             <input
               checked={addTxDebit}
+              data-testid='add-tx-debit-credit'
               id='add-tx-debit-credit'
               onChange={() => setAddTxDebit(!addTxDebit)}
               type='checkbox'
             />
           </div>
         </div>
-        <button>{account?.addTransaction?.submitButton}</button>
+        <button data-testid='add-tx-submit-button'>{i18nData?.addTransaction?.submitButton}</button>
       </form>
     </div>
   )

@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import { string, bool, number, shape, func } from 'prop-types'
+import { string, bool, number, shape, func, object } from 'prop-types'
 import { formatCurrency } from '../../common/utils'
 import { styles } from './TxTableDataRowStyles'
 
 const makeDataTestId = (transactionId, fieldName) => `transaction-${transactionId}-${fieldName}`
 const makeDataInputTestId = (transactionId, fieldName) => `transaction-input-${transactionId}-${fieldName}`
 
-export function TxTableDataRow ({ removeTransaction, tx, updateTransaction }) {
+export function TxTableDataRow ({ removeTransaction, tx, updateTransaction, i18n }) {
   const [showEditMenu, setShowEditMenu] = useState(false)
   const [editMode, setEditMode] = useState(false)
   const [editData, setEditData] = useState(tx)
@@ -82,15 +82,15 @@ export function TxTableDataRow ({ removeTransaction, tx, updateTransaction }) {
       <td className='currency' data-testid={makeDataTestId(id, 'amount')}>{ formatCurrency(amount) }</td>
       <td className='edit-menu-container'>{ !showEditMenu
         ? (
-          <button onClick={() => setShowEditMenu(true)}>
+          <button data-testid={makeDataTestId(id, 'options')} onClick={() => setShowEditMenu(true)}>
             Options
           </button>
         )
         : (
           <div className='edit-menu' >
             <button className='edit-menu-cancel' onClick={() => setShowEditMenu(false)}>X</button>
-            <button className='edit-menu-edit' onClick={() => setEditMode(true)}>Edit</button>
-            <button className='edit-menu-delete' onClick={() => removeTransaction(id)}>Remove</button>
+            <button className='edit-menu-edit' data-testid={makeDataTestId(id, 'edit')} onClick={() => setEditMode(true)}>Edit</button>
+            <button className='edit-menu-delete' data-testid={makeDataTestId(id, 'delete')} onClick={() => removeTransaction(id)}>Remove</button>
           </div>
         )}
       </td>
@@ -109,5 +109,6 @@ TxTableDataRow.propTypes = {
     amount: number
   }),
   removeTransaction: func,
-  updateTransaction: func
+  updateTransaction: func,
+  i18n: object
 }

@@ -18,6 +18,7 @@ module.exports = {
         credit: '信用',
         amount: '数量'
       },
+      empty: '没有找到记录',
       buttons: {
         options: '选项',
         edit: '编辑',
