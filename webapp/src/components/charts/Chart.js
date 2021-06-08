@@ -60,8 +60,6 @@ const Chart = ({ i18n }) => {
     document.title = i18nData?.title
   }, [i18nData])
 
-  console.log('transactions', transactions)
-
   return (
     <div css={styles}>
       <h1>{debitSelected ? i18nData.chargesHeader : i18nData.depositsHeader}</h1>
@@ -98,7 +96,7 @@ const Chart = ({ i18n }) => {
             <ul className='legend'>
               {chartData.data.map((dataPoint, i) => {
                 return (
-                  <li className='legend-row' data-testid={'legend-row-' + dataPoint.name }>
+                  <li className='legend-row' data-testid={'legend-row-' + dataPoint.name} key={dataPoint.name}>
                     <div className='color-box' style={{ backgroundColor: COLORS[i] }} />
                     <p className='name'>{initialCaps(dataPoint.name)}</p>
                     <p className='amount'>{formatCurrency(dataPoint.value)}</p>
