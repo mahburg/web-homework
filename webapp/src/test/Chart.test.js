@@ -56,6 +56,7 @@ describe('Chart Page', () => {
     )
 
     console.log('legendData', legendData)
+    // NOTE: tests here are not completed. I am having difficulty getting the apollo request to mock properly.
 
   })
 })
